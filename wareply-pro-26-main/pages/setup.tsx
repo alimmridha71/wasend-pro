@@ -29,7 +29,7 @@ export default function SetupPage() {
 
   return (
     <>
-      <Head><title>WaReply Pro — Setup Admin</title></Head>
+      <Head><title>Wasend-Pro — Setup Admin</title></Head>
       <div style={styles.page}>
         <div style={styles.card}>
           <div style={styles.logo}>

@@ -28,14 +28,14 @@ export default function AdminLayout({ children, title }: { children: React.React
 
   return (
     <>
-      <Head><title>{title ? `${title} — WaReply Admin` : 'WaReply Pro Admin'}</title></Head>
+      <Head><title>{title ? `${title} — Wasend-Pro Admin` : 'Wasend-Pro Admin'}</title></Head>
       <div style={s.root}>
         {/* Sidebar */}
         <aside style={s.sidebar}>
           <div style={s.sideHeader}>
             <span style={{ fontSize: 28 }}>💬</span>
             <div>
-              <div style={s.sideTitle}>WaReply Pro</div>
+              <div style={s.sideTitle}>Wasend-Pro</div>
               <div style={s.sideSub}>Admin Panel</div>
             </div>
           </div>

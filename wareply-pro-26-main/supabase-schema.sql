@@ -1,4 +1,4 @@
--- WaReply Pro — Supabase schema (safe to re-run: uses IF NOT EXISTS)
+-- Wasend-Pro — Supabase schema (safe to re-run: uses IF NOT EXISTS)
 -- Run in: Supabase Dashboard → SQL Editor → New query → paste → Run
 -- Only needed if your tables don't exist yet.
 

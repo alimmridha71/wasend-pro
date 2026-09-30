@@ -29,13 +29,13 @@ export default function LoginPage() {
 
   return (
     <>
-      <Head><title>WaReply Pro — Admin Login</title></Head>
+      <Head><title>Wasend-Pro — Admin Login</title></Head>
       <div style={styles.page}>
         <div style={styles.card}>
           <div style={styles.logo}>
             <span style={styles.logoIcon}>💬</span>
             <div>
-              <div style={styles.logoTitle}>WaReply Pro</div>
+              <div style={styles.logoTitle}>Wasend-Pro</div>
               <div style={styles.logoSub}>Admin Panel</div>
             </div>
           </div>

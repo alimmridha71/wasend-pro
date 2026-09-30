@@ -155,18 +155,18 @@ export default function PaymentsPage() {
     }
 
     const waMessage =
-      ` *WaReply Pro — Payment Approved!*\n\n` +
+      ` *Wasend-Pro — Payment Approved!*\n\n` +
       ` Hello *${selected.customer_name}*! Your payment has been verified.\n\n` +
       ` *Plan:* ${planLabel[selected.plan] || selected.plan}\n` +
       ` *Expiry Date:* ${expiryStr}\n` +
       ` *License Key:*\n\n` +
       `\`${key}\`\n\n` +
       `*How to activate:*\n` +
-      `1. Open WaReply Pro extension\n` +
+      `1. Open Wasend-Pro extension\n` +
       `2. Go to Account tab\n` +
       `3. Enter your license key\n` +
       `4. Click Activate \n\n` +
-      `Thank you for choosing WaReply Pro!`
+      `Thank you for choosing Wasend-Pro!`
 
     const rawPhone = selected.phone.replace(/\D/g, '')
     const phone = rawPhone.startsWith('880') ? rawPhone : '880' + rawPhone.replace(/^0/, '')
