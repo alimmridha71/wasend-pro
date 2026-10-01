@@ -29,11 +29,11 @@ export default function LoginPage() {
 
   return (
     <>
-      <Head><title>Wasend-Pro — Admin Login</title></Head>
+      <Head><title>Wasend-Pro — Admin Login</title><link rel="icon" href="/favicon.png" /></Head>
       <div style={styles.page}>
         <div style={styles.card}>
           <div style={styles.logo}>
-            <span style={styles.logoIcon}>💬</span>
+            <img src="/logo.png" alt="Wasend-Pro" width={52} height={52} style={{ borderRadius: 12, display: 'block' }} />
             <div>
               <div style={styles.logoTitle}>Wasend-Pro</div>
               <div style={styles.logoSub}>Admin Panel</div>

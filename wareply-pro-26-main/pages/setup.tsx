@@ -29,7 +29,7 @@ export default function SetupPage() {
 
   return (
     <>
-      <Head><title>Wasend-Pro — Setup Admin</title></Head>
+      <Head><title>Wasend-Pro — Setup Admin</title><link rel="icon" href="/favicon.png" /></Head>
       <div style={styles.page}>
         <div style={styles.card}>
           <div style={styles.logo}>

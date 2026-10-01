@@ -28,12 +28,12 @@ export default function AdminLayout({ children, title }: { children: React.React
 
   return (
     <>
-      <Head><title>{title ? `${title} — Wasend-Pro Admin` : 'Wasend-Pro Admin'}</title></Head>
+      <Head><title>{title ? `${title} — Wasend-Pro Admin` : 'Wasend-Pro Admin'}</title><link rel="icon" href="/favicon.png" /></Head>
       <div style={s.root}>
         {/* Sidebar */}
         <aside style={s.sidebar}>
           <div style={s.sideHeader}>
-            <span style={{ fontSize: 28 }}>💬</span>
+            <img src="/logo.png" alt="Wasend-Pro" width={40} height={40} style={{ borderRadius: 10, display: 'block' }} />
             <div>
               <div style={s.sideTitle}>Wasend-Pro</div>
               <div style={s.sideSub}>Admin Panel</div>
