@@ -15,15 +15,17 @@ export default function AdminLayout({ children, title }: { children: React.React
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token')
-    if (!token) { router.push('/'); return }
-    setEmail(localStorage.getItem('admin_email') || '')
+    fetch('/api/auth/me')
+      .then(async res => {
+        if (!res.ok) throw new Error('unauthorized')
+        const data = await res.json()
+        setEmail(data.admin?.email || 'Admin')
+      })
+      .catch(() => router.push('/'))
   }, [router])
 
   function logout() {
-    localStorage.removeItem('admin_token')
-    localStorage.removeItem('admin_email')
-    router.push('/')
+    fetch('/api/auth/logout', { method: 'POST' }).finally(() => router.push('/'))
   }
 
   return (

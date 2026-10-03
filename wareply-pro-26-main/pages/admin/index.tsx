@@ -11,8 +11,7 @@ export default function AdminDashboard() {
   useEffect(() => { loadStats() }, [])
 
   async function apiGet(url: string) {
-    const token = localStorage.getItem('admin_token')
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } })
     if (!res.ok) throw new Error('Auth failed')
     return res.json()
   }

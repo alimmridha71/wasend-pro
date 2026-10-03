@@ -26,9 +26,8 @@ export default function PaymentsPage() {
   useEffect(() => { applyFilter() }, [payments, filter, search])
 
   async function apiCall(url: string, method = 'GET', body?: any) {
-    const token = localStorage.getItem('admin_token')
     const res = await fetch(url, {
-      method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      method, headers: { 'Content-Type': 'application/json' },
       body: body ? JSON.stringify(body) : undefined,
     })
     if (res.status === 401) { window.location.href = '/'; return null }

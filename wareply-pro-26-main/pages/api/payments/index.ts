@@ -1,124 +1,76 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { supabaseAdmin } from '@/lib/supabase'
 import { requireAuth } from '@/lib/auth'
- 
+import { getClientIp, rateLimit } from '@/lib/rateLimit'
+
 function setCors(res: NextApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 }
- 
+
+const PLANS = new Set(['monthly','yearly','lifetime'])
+const METHODS = new Set(['bkash','nagad','rocket','bank'])
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   setCors(res)
   if (req.method === 'OPTIONS') return res.status(200).end()
- 
-  // ✅ Public POST — extension থেকে payment submit
+
   if (req.method === 'POST') {
-    const { customer_name, business_name, phone, plan, method, txn_id, amount } = req.body
-    if (!customer_name || !phone || !plan || !method || !txn_id) {
-      return res.status(400).json({ error: 'Missing required fields' })
+    const rl = rateLimit(`payment:${getClientIp(req)}`, 10, 60 * 60 * 1000)
+    if (!rl.allowed) return res.status(429).json({ error: 'Too many payment submissions. Try again later.' })
+    const customer_name = String(req.body?.customer_name || '').trim().slice(0, 120)
+    const business_name = String(req.body?.business_name || '').trim().slice(0, 160)
+    const phone = String(req.body?.phone || '').trim().slice(0, 32)
+    const plan = String(req.body?.plan || '').trim().toLowerCase()
+    const method = String(req.body?.method || '').trim().toLowerCase()
+    const txn_id = String(req.body?.txn_id || '').trim().slice(0, 120)
+    const amount = req.body?.amount == null || req.body.amount === '' ? null : Number(req.body.amount)
+    if (!customer_name || !phone || !PLANS.has(plan) || !METHODS.has(method) || !txn_id || txn_id.length < 3) return res.status(400).json({ error: 'Invalid payment details' })
+    if (amount !== null && (!Number.isFinite(amount) || amount < 0 || amount > 100000000)) return res.status(400).json({ error: 'Invalid amount' })
+    const { error } = await supabaseAdmin.from('payment_submissions').insert({ customer_name, business_name, phone, plan, method, txn_id, amount, status: 'pending' })
+    if (error) {
+      if ((error as any).code === '23505') return res.status(409).json({ error: 'Transaction ID already submitted' })
+      return res.status(500).json({ error: 'Could not submit payment' })
     }
- 
-    const { data: existing } = await supabaseAdmin
-      .from('payment_submissions')
-      .select('id')
-      .eq('txn_id', txn_id.trim())
-      .limit(1)
-    if (existing && existing.length > 0) {
-      return res.status(409).json({ error: 'Transaction ID already submitted' })
-    }
- 
-    const { error } = await supabaseAdmin.from('payment_submissions').insert({
-      customer_name, business_name, phone,
-      plan, method, txn_id: txn_id.trim(), amount,
-      status: 'pending',
-    })
-    if (error) return res.status(500).json({ error: error.message })
     return res.json({ success: true, message: 'Payment submitted. Admin will verify within 24 hours.' })
   }
- 
-  // ✅ Auth required for GET and PUT
-  const authHandler = requireAuth(async (req: NextApiRequest, res: NextApiResponse) => {
- 
-    if (req.method === 'GET') {
-      const { data, error } = await supabaseAdmin
-        .from('payment_submissions')
-        .select('*')
-        .order('submitted_at', { ascending: false })
-      if (error) return res.status(500).json({ error: error.message })
-      return res.json(data)
+
+  const authHandler = requireAuth(async (r: NextApiRequest, response: NextApiResponse) => {
+    if (r.method === 'GET') {
+      const { data, error } = await supabaseAdmin.from('payment_submissions').select('*').order('submitted_at', { ascending: false })
+      if (error) return response.status(500).json({ error: 'Failed to load payments' })
+      return response.json(data)
     }
- 
-    if (req.method === 'PUT') {
-      const { id, status, license_key, admin_note } = req.body
-      if (!id || !status) return res.status(400).json({ error: 'id and status required' })
- 
-      // ✅ FIX: Payment approve হলে license auto-activate করো
-      if (status === 'approved' && license_key) {
-        const trimmedKey = license_key.trim().toUpperCase()
- 
-        // License key টা আছে কিনা check করো
-        const { data: licenseRow, error: licErr } = await supabaseAdmin
-          .from('license_keys')
-          .select('*')
-          .eq('key', trimmedKey)
-          .single()
- 
-        if (licErr || !licenseRow) {
-          return res.status(404).json({ error: `License key "${trimmedKey}" not found. Please generate the key first from Licenses page.` })
-        }
- 
-        // Payment এর phone দিয়ে license activate করো (যদি এখনো bound না থাকে)
+    if (r.method === 'PUT') {
+      const id = String(r.body?.id || '')
+      const status = String(r.body?.status || '').toLowerCase()
+      const licenseKey = r.body?.license_key ? String(r.body.license_key).trim().toUpperCase() : null
+      const adminNote = r.body?.admin_note ? String(r.body.admin_note).slice(0, 1000) : null
+      if (!id || !['pending','approved','rejected'].includes(status)) return response.status(400).json({ error: 'Invalid payment update' })
+      if (licenseKey && !/^WRP-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(licenseKey)) return response.status(400).json({ error: 'Invalid license key' })
+      if (status === 'approved' && licenseKey) {
+        const { data: licenseRow, error: licErr } = await supabaseAdmin.from('license_keys').select('*').eq('key', licenseKey).single()
+        if (licErr || !licenseRow) return response.status(404).json({ error: `License key "${licenseKey}" not found. Generate it first.` })
+        const { data: paymentRow, error: paymentErr } = await supabaseAdmin.from('payment_submissions').select('phone,customer_name,business_name').eq('id', id).single()
+        if (paymentErr || !paymentRow) return response.status(404).json({ error: 'Payment not found' })
         if (!licenseRow.bound_phone) {
-          // payment submission থেকে phone নাও
-          const { data: paymentRow } = await supabaseAdmin
-            .from('payment_submissions')
-            .select('phone, customer_name, business_name')
-            .eq('id', id)
-            .single()
- 
-          if (paymentRow?.phone) {
-            const activationDate = new Date()
-            const expiryDate =
-              licenseRow.plan === 'lifetime' || licenseRow.duration_days >= 3000
-                ? new Date('2099-12-31T23:59:59Z')
-                : new Date(activationDate.getTime() + licenseRow.duration_days * 86400000)
- 
-            await supabaseAdmin
-              .from('license_keys')
-              .update({
-                bound_phone: paymentRow.phone,
-                bound_name: paymentRow.customer_name || null,
-                bound_biz: paymentRow.business_name || null,
-                activation_date: activationDate.toISOString(),
-                expiry_date: expiryDate.toISOString(),
-                status: 'active',
-                updated_at: new Date().toISOString(),
-              })
-              .eq('id', licenseRow.id)
-          }
+          const activationDate = new Date()
+          const expiryDate = licenseRow.plan === 'lifetime' || licenseRow.duration_days >= 3000
+            ? new Date('2099-12-31T23:59:59Z')
+            : new Date(activationDate.getTime() + Number(licenseRow.duration_days) * 86400000)
+          const { error: licUpdateError } = await supabaseAdmin.from('license_keys').update({
+            bound_phone: paymentRow.phone, bound_name: paymentRow.customer_name || null, bound_biz: paymentRow.business_name || null,
+            activation_date: activationDate.toISOString(), expiry_date: expiryDate.toISOString(), status: 'active', updated_at: new Date().toISOString()
+          }).eq('id', licenseRow.id)
+          if (licUpdateError) return response.status(500).json({ error: 'Could not activate license' })
         }
       }
- 
-      // Payment status update করো
-      const { error } = await supabaseAdmin
-        .from('payment_submissions')
-        .update({
-          status,
-          license_key: license_key || null,
-          admin_note: admin_note || null,
-          reviewed_at: new Date().toISOString(),
-          reviewed_by: (req as any).admin?.email,
-        })
-        .eq('id', id)
- 
-      if (error) return res.status(500).json({ error: error.message })
-      return res.json({ success: true })
+      const { error } = await supabaseAdmin.from('payment_submissions').update({ status, license_key: licenseKey, admin_note: adminNote, reviewed_at: new Date().toISOString(), reviewed_by: (r as any).admin?.email }).eq('id', id)
+      if (error) return response.status(500).json({ error: 'Failed to update payment' })
+      return response.json({ success: true })
     }
- 
-    res.status(405).end()
+    return response.status(405).end()
   })
- 
   return authHandler(req, res)
 }
- 
