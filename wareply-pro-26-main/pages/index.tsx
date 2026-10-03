@@ -20,6 +20,8 @@ export default function LoginPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Login failed'); return }
+      localStorage.setItem('admin_token', data.token)
+      localStorage.setItem('admin_email', data.email)
       router.push('/admin')
     } catch { setError('Network error') }
     finally { setLoading(false) }

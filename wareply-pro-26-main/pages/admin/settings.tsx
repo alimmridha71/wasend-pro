@@ -21,7 +21,8 @@ export default function SettingsPage() {
   async function load() {
     setLoading(true)
     try {
-        const res = await fetch('/api/settings', { headers: { 'Content-Type': 'application/json' } })
+      const token = localStorage.getItem('admin_token')
+      const res = await fetch('/api/settings', { headers: { Authorization: `Bearer ${token}` } })
       if (res.status === 401) { window.location.href = '/'; return }
       const data = await res.json()
       setForm({ ...DEFAULT_SETTINGS, ...data })
@@ -32,9 +33,10 @@ export default function SettingsPage() {
   async function save() {
     setSaving(true); setMsg({ text: '', ok: true })
     try {
-        const res = await fetch('/api/settings', {
+      const token = localStorage.getItem('admin_token')
+      const res = await fetch('/api/settings', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
       const data = await res.json()
