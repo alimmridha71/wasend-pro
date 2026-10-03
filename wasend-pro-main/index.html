@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Wasend-Pro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: #f9f9f9;
+    }
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 60px 40px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 28px;
+      color: #128C7E;
+      margin-bottom: 6px;
+    }
+    .meta {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    h2 {
+      font-size: 17px;
+      color: #075E54;
+      margin-top: 36px;
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+    ul {
+      margin: 10px 0 12px 22px;
+      font-size: 15px;
+    }
+    ul li {
+      margin-bottom: 8px;
+    }
+    strong { color: #222; }
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 13px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Privacy Policy</h1>
+  <div class="meta">
+    Extension Name: Wasend-Pro<br>
+    Last Updated: September 30, 2026
+  </div>
+
+  <h2>1. Introduction</h2>
+  <p>
+    Wasend-Pro is a Chrome browser extension that helps users automate WhatsApp Web messaging,
+    schedule broadcast messages, manage auto-replies, and integrate with WooCommerce stores.
+    We are committed to protecting your privacy and being fully transparent about how data is handled.
+  </p>
+
+  <h2>2. Data We Collect</h2>
+  <p>Wasend-Pro does <strong>not</strong> collect, store, or transmit any personal data to external servers, except as described below:</p>
+  <ul>
+    <li>
+      <strong>License Key:</strong> When you activate the extension, your license key is sent to our
+      licensing server (wasend-pro.vercel.app) only to verify its validity.
+      No personal information is included in this request.
+    </li>
+    <li>
+      <strong>Contact Lists:</strong> Phone numbers and names you upload for broadcasts are stored
+      locally in your browser's IndexedDB. They are never sent to our servers.
+    </li>
+    <li>
+      <strong>Message Templates:</strong> Templates you create are stored locally in IndexedDB.
+      They are never uploaded to any server.
+    </li>
+    <li>
+      <strong>WooCommerce Credentials:</strong> If you connect a WooCommerce store, your store URL
+      and API keys are stored locally in Chrome's storage API. They are used only to make direct
+      API calls from your browser to your own store.
+    </li>
+    <li>
+      <strong>Activity Logs:</strong> Broadcast and auto-reply logs are stored locally in IndexedDB
+      only. Logs older than 30 days are deleted automatically.
+    </li>
+  </ul>
+
+  <h2>3. Data We Do Not Collect</h2>
+  <ul>
+    <li>We do not read, store, or transmit your WhatsApp messages.</li>
+    <li>We do not access your WhatsApp account credentials or session data.</li>
+    <li>We do not collect browsing history or any data from websites other than web.whatsapp.com.</li>
+    <li>We do not sell, share, or transfer any data to third parties.</li>
+    <li>We do not use analytics tools or tracking scripts of any kind.</li>
+  </ul>
+
+  <h2>4. Permissions Used and Why</h2>
+  <ul>
+    <li><strong>storage / unlimitedStorage:</strong> To save your templates, contacts, settings, and logs locally on your device.</li>
+    <li><strong>tabs:</strong> To detect the active WhatsApp Web tab and run automation only there.</li>
+    <li><strong>scripting:</strong> To inject automation scripts into WhatsApp Web in order to send messages and manage chats.</li>
+    <li><strong>alarms:</strong> To run scheduled tasks such as timed broadcasts and WooCommerce order polling.</li>
+    <li><strong>notifications:</strong> To display desktop alerts for new WooCommerce orders.</li>
+    <li><strong>host_permissions (web.whatsapp.com):</strong> Required to operate automation on WhatsApp Web.</li>
+    <li><strong>host_permissions (https://*/*, http://*/*):</strong> Required to make API calls to user-configured WooCommerce stores, which may be hosted on any domain.</li>
+  </ul>
+
+  <h2>5. Third-Party Services</h2>
+  <p>The extension communicates with the following external services:</p>
+  <ul>
+    <li>
+      <strong>wasend-pro.vercel.app:</strong> Our license verification server.
+      Only your license key is transmitted to confirm it is valid.
+    </li>
+    <li>
+      <strong>Your WooCommerce store:</strong> Direct API calls are made from your browser
+      to your own store URL using credentials you provide. We never see or store this data.
+    </li>
+  </ul>
+  <p>No other third-party services receive any data from this extension.</p>
+
+  <h2>6. Data Storage and Retention</h2>
+  <p>
+    All data is stored locally on your device using Chrome's built-in storage APIs (storage and IndexedDB).
+    Activity logs are automatically deleted after 30 days.
+    You can remove all stored data at any time by uninstalling the extension or clearing your browser storage.
+  </p>
+
+  <h2>7. Data Security</h2>
+  <p>
+    Since all data is stored locally on your device and not transmitted to our servers (except license key validation),
+    the security of your data depends on your own device security. We do not have access to your data and cannot retrieve it.
+  </p>
+
+  <h2>8. Children's Privacy</h2>
+  <p>
+    This extension is not intended for use by children under the age of 13.
+    We do not knowingly collect any data from children.
+  </p>
+
+  <h2>9. Changes to This Policy</h2>
+  <p>
+    We may update this Privacy Policy from time to time. Any changes will be reflected
+    by the updated date at the top of this page. Continued use of the extension after
+    changes are posted constitutes acceptance of the updated policy.
+  </p>
+
+  <h2>10. Contact Us</h2>
+  <p>
+    If you have any questions or concerns about this Privacy Policy, please contact us at:<br>
+    <strong>Email: alimmridha71@gmail.com</strong>
+  </p>
+
+  <footer>
+    Wasend-Pro. All rights reserved. 2026.
+  </footer>
+
+</div>
+</body>
+</html>

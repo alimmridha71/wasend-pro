@@ -1,0 +1,1 @@
+# Wasend-Pro Privacy Policy
