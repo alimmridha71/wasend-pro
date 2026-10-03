@@ -19,9 +19,10 @@ export default function LicensesPage() {
   useEffect(() => { applyFilter() }, [licenses, search, filterStatus, filterPlan])
 
   async function apiCall(url: string, method = 'GET', body?: any) {
+    const token = localStorage.getItem('admin_token')
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: body ? JSON.stringify(body) : undefined,
     })
     if (res.status === 401) { window.location.href = '/'; return null }
